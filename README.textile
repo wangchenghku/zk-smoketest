@@ -94,6 +94,57 @@ This tool uses the ZooKeeper python binding to test various operation latencies.
 
 By default asynchronous operations are run, specify the "--synchronous" flag if you want synchronous operations to be used. Typically the difference between the two will give you insight into your network latency.
 
+<pre>
+Typically the difference between the two will give you insight into your network latency.
+
+def asynchronous_latency_test(s, data):
+    # set znode_count znodes
+    def func():
+        callbacks = []
+        for j in xrange(options.znode_count):
+            cb = zkclient.SetCallback()
+            cb.cv.acquire()
+            s.aset(child_path(j), cb, data)
+            callbacks.append(cb)
+
+        for cb in callbacks:
+            cb.waitForSuccess()
+
+    timer2(func, "set     %7d           znodes " % (options.znode_count))
+
+Connecting to 202.45.128.173:2181
+Connected in 16 ms, handle is 0
+Testing latencies on server 202.45.128.173:2181 using asynchronous calls
+created   10000 permanent znodes  in    552 ms (0.055206 ms/op 18113.937652/sec)
+set       10000           znodes  in    563 ms (0.056307 ms/op 17759.659026/sec)
+get       10000           znodes  in    382 ms (0.038295 ms/op 26112.853640/sec)
+deleted   10000 permanent znodes  in    237 ms (0.023747 ms/op 42109.710233/sec)
+created   10000 ephemeral znodes  in    739 ms (0.073921 ms/op 13527.957526/sec)
+watched   10000           znodes  in    431 ms (0.043104 ms/op 23199.918579/sec)
+deleted   10000 ephemeral znodes  in    297 ms (0.029790 ms/op 33568.074065/sec)
+notif     10000           watches in      0 ms (included in prior)
+Latency test complete
+
+def synchronous_latency_test(s, data):
+    # set znode_count znodes
+    timer((s.set(child_path(j), data)
+           for j in xrange(options.znode_count)),
+          "set     %7d           znodes " % (options.znode_count))
+
+Connecting to 202.45.128.173:2181
+Connected in 15 ms, handle is 0
+Testing latencies on server 202.45.128.173:2181 using syncronous calls
+created   10000 permanent znodes  in  32384 ms (3.238494 ms/op 308.785484/sec)
+set       10000           znodes  in  31845 ms (3.184508 ms/op 314.020252/sec)
+get       10000           znodes  in   8231 ms (0.823185 ms/op 1214.794053/sec)
+deleted   10000 permanent znodes  in  30826 ms (3.082692 ms/op 324.391808/sec)
+created   10000 ephemeral znodes  in  32463 ms (3.246397 ms/op 308.033829/sec)
+watched   10000           znodes  in   9141 ms (0.914148 ms/op 1093.914175/sec)
+deleted   10000 ephemeral znodes  in  31597 ms (3.159710 ms/op 316.484740/sec)
+notif     10000           watches in   1001 ms (0.100110 ms/op 9988.973392/sec)
+Latency test complete
+<pre>
+
 This project is a work in progress - so please don't hesitate to suggest ideas, complain about problems found, or contribute patches.
 
 h3. Usage
