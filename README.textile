@@ -143,7 +143,7 @@ watched   10000           znodes  in   9141 ms (0.914148 ms/op 1093.914175/sec)
 deleted   10000 ephemeral znodes  in  31597 ms (3.159710 ms/op 316.484740/sec)
 notif     10000           watches in   1001 ms (0.100110 ms/op 9988.973392/sec)
 Latency test complete
-<pre>
+</pre>
 
 This project is a work in progress - so please don't hesitate to suggest ideas, complain about problems found, or contribute patches.
 
